@@ -1,0 +1,29 @@
+services:
+  app:
+    image: php:8.1-fpm
+    container_name: app
+    restart: always
+    volumes:
+      - ./app:/var/www/simple_app/app
+
+  proxy:
+    image: nginx
+    container_name: app-proxy
+    restart: always
+    ports:
+      - 83:80
+    volumes:
+      - ./simple_app:/etc/nginx/conf.d/default.conf
+      - ./book:/var/www/simple_app/book
+      - ./app:/var/www/simple_app/app
+
+  db:
+    image: mysql:5.7
+    container_name: app-db
+    restart: always
+    environment:
+      - MYSQL_USER=php
+      - MYSQL_PASSWORD=phppasswd
+      - MYSQL_ROOT_PASSWORD=root
+    volumes:
+     - "./simple_data.sql:/docker-entrypoint-initdb.d/1.sql"
